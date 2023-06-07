@@ -1,25 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { Route, Switch, useHistory } from "react-router-dom";
+import { OktaAuth } from "@okta/okta-auth-js";
+import { LoginCallback, Security } from "@okta/okta-react";
+
+import { config } from "./auth/config";
+
+import "./App.scss";
+import { HomePage } from "./Pages/Home";
+import { LoginPage } from "./Pages/Login";
+
+const oktaAuth = new OktaAuth(config.oidc);
 
 function App() {
+  const history = useHistory();
+
+  const restoreOriginalUri = async (
+    _oktaAuth: OktaAuth
+  ) => {
+    history.replace("home");
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Security oktaAuth={oktaAuth} restoreOriginalUri={restoreOriginalUri}>
+      <Switch>
+        <Route path="/home" exact>
+          <HomePage />
+        </Route>
+        <Route path="/login/callback" component={LoginCallback} />
+        <Route path="/login" render={() => <LoginPage />} />
+        <Route path="/" render={() => <div>Not Found</div>} />
+      </Switch>
+    </Security>
   );
 }
 
