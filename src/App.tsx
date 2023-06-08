@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Switch, useHistory } from "react-router-dom";
+import { Redirect, Route, Switch, useHistory } from "react-router-dom";
 import { OktaAuth } from "@okta/okta-auth-js";
 import { LoginCallback, Security } from "@okta/okta-react";
 
@@ -14,9 +14,7 @@ const oktaAuth = new OktaAuth(config.oidc);
 function App() {
   const history = useHistory();
 
-  const restoreOriginalUri = async (
-    _oktaAuth: OktaAuth
-  ) => {
+  const restoreOriginalUri = async (_oktaAuth: OktaAuth) => {
     history.replace("home");
   };
 
@@ -28,7 +26,7 @@ function App() {
         </Route>
         <Route path="/login/callback" component={LoginCallback} />
         <Route path="/login" render={() => <LoginPage />} />
-        <Route path="/" render={() => <div>Not Found</div>} />
+        <Route path="/" render={() => <Redirect to={"/login"} />} />
       </Switch>
     </Security>
   );
